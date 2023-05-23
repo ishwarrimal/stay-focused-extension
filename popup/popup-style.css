@@ -1,0 +1,22 @@
+.popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  cursor: move;
+}
+
+.popup .todo-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.popup .todo-item input[type="checkbox"] {
+  margin-right: 10px;
+}
