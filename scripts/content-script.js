@@ -1,7 +1,7 @@
 let sfPopup;
-const showModal = () => {
+const showModal = async () => {
   sfPopup = document.querySelector("sf-popup").shadowRoot;
-  populateTodoList();
+  await populateTodoList();
   const popup = sfPopup.querySelector(".popup");
   popup.style.display = "block";
 };
@@ -18,8 +18,8 @@ const handleBookmarkClicked = () => {
   console.log("Word to bookmark is -> ", selection);
 };
 
-const populateTodoList = () => {
-  const todoList = JSON.parse(localStorage.getItem("todoData")) || [];
+const populateTodoList = async () => {
+  const todoList = JSON.parse(await getTodoData());
   const content = `${todoList
     .map(
       (item) => `

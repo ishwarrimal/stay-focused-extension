@@ -1,3 +1,5 @@
+// data: [{"id":1,"text":"Dry clothes","completed":false},{"id":2,"text":"Task 2","completed":false},{"id":3,"text":"Task 3","completed":false}]
+
 class SFPopup extends HTMLElement {
   constructor() {
     super();
@@ -14,12 +16,13 @@ class SFPopup extends HTMLElement {
     const template = `
     <style>
     .popup {
-      position: absolute;
+      position: fixed;
       display: none;
-      top: 10%;
-      left: 90%;
+      top: 10px;
+      left: 10px;
+      max-width: 20vw;
       background-color: #fff;
-      padding: 20px;
+      padding: 10px;
       border: 1px solid #ccc;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       z-index: 9999;
@@ -33,13 +36,25 @@ class SFPopup extends HTMLElement {
     }
     
     .popup .todo-item input[type="checkbox"] {
-      margin-right: 10px;
+      margin-right: 4px;
+      cursor: pointer;
+    }
+
+    .popup .todo-item label {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: help;
+      text-transform: capitalize;
+    }
+
+    .popup .todo-item label:hover{
+      overflow: visible;
     }
     
     </style>
       <div class="popup">
-        <h3>Todo List</h3>
-        <ul style="padding:0" id="todo-ul">
+        <ul style="padding:0; margin: 0" id="todo-ul">
           
         </ul>
       </div>
