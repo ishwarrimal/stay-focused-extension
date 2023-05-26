@@ -13,6 +13,11 @@ h1 {
   display: flex;
 }
 
+#input-todo {
+  margin-bottom: 10px;
+  width: 90%;
+}
+
 .todo-item input[type="text"] {
   flex-grow: 1;
   margin-right: 10px;

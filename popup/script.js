@@ -57,6 +57,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Add event listener to the input field
   const inputField = document.createElement("input");
   inputField.type = "text";
+  inputField.id = "input-todo";
+  inputField.placeholder = "Add your task";
   inputField.addEventListener("keydown", function (event) {
     if (event.key === "Enter" && inputField.value.trim() !== "") {
       addTodoItem(inputField.value.trim());
