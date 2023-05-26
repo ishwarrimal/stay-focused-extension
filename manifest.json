@@ -21,11 +21,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": [
-        "scripts/sf-popup.js",
-        "assets/volume-high-solid.svg",
-        "popup/popup-style.css"
-      ],
+      "resources": ["scripts/sf-popup.js", "assets/volume-high-solid.svg"],
       "matches": ["<all_urls>"]
     }
   ]

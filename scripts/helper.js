@@ -1,13 +1,14 @@
 const defaultData = [
-  { id: 1, text: "Dry clothes", completed: false },
-  { id: 2, text: "Task 2", completed: false },
-  { id: 3, text: "Task 3", completed: false },
+  { id: 1, text: "Click on extension", completed: false },
+  { id: 2, text: "Delete All Task", completed: false },
+  { id: 3, text: "Add New Task", completed: false },
 ];
 
-async function getTodoData() {
+async function getTodoData(firstTime = false) {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(["todoData"], function (res) {
-      if (!res.todoData) {
+      console.log(res);
+      if (!res.todoData || (firstTime && res.todoData == "[]")) {
         return addTodoData()
           .then((res) => {
             resolve(res || []);
