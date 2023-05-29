@@ -16,6 +16,7 @@ h1 {
 #input-todo {
   margin-bottom: 10px;
   width: 90%;
+  min-width: 200px;
 }
 
 .todo-item input[type="text"] {

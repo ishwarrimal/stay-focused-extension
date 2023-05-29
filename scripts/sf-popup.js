@@ -9,7 +9,7 @@ class SFPopup extends HTMLElement {
   connectedCallback() {
     console.log("component connected");
     this.render();
-    this.addDraggable();
+    this.addFeature();
   }
 
   render() {
@@ -26,6 +26,9 @@ class SFPopup extends HTMLElement {
       border: 1px solid #ccc;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
       z-index: 9999;
+    }
+
+    .popup .draggable-div{
       cursor: move;
     }
     
@@ -44,7 +47,6 @@ class SFPopup extends HTMLElement {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      cursor: help;
       text-transform: capitalize;
     }
 
@@ -54,22 +56,32 @@ class SFPopup extends HTMLElement {
     
     </style>
       <div class="popup">
-        <ul style="padding:0; margin: 0" id="todo-ul">
-          
-        </ul>
+        <div class="draggable-div">
+          <ul style="padding:0; margin: 0" id="todo-ul">
+          </ul>
+        </div>
       </div>
     `;
 
     this.shadowRoot.innerHTML = template;
   }
 
-  addDraggable() {
+  addFeature() {
     const popup = this.shadowRoot.querySelector(".popup");
+    const draggableDiv = popup.querySelector(".draggable-div");
     let pos1 = 0,
       pos2 = 0,
       pos3 = 0,
       pos4 = 0;
-    popup.onmousedown = dragMouseDown;
+    draggableDiv.onmousedown = dragMouseDown;
+    popup.onmousedown = resizeMouseDown;
+
+    function resizeMouseDown(e) {
+      if (e.target.className != "popup") return;
+      e = e || window.event;
+      e.preventDefault();
+      console.log("time to resize");
+    }
 
     function dragMouseDown(e) {
       e = e || window.event;
