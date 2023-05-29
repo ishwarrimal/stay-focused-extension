@@ -68,6 +68,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         console.log("Something went wrong in getTodoData, -> ", e);
         sendResponse([]);
       });
+    return true;
   }
-  return true;
 });
