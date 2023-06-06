@@ -20,7 +20,42 @@ async function getTodoData(firstTime = false) {
   });
 }
 
-async function getDisabledDomainList(firstTime = false) {
+//store config for each domains:
+// domainConfig : {url : {disabled: true, minimized: true, position: {x: 100px, y: 200px}}}
+async function getDomainConfig(url) {
+  return new Promise((resole, reject) => {
+    chrome.storage.local.get("[domainConfig]", function (res) {
+      const domainConfig = res.domainConfig;
+      if (!domainConfig) {
+        reject("no config found");
+      }
+      const returnData = JSON.parse(domainConfig);
+      resole(returnData[url] || {});
+    });
+  });
+}
+
+//config is {minimized: true}
+async function updateDomainConfig(url, config) {
+  const oldConfig = await getDomainConfig(url);
+  const newConfig = { oldConfig, ...config };
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set(
+      { disabledDomainList: serializedData },
+      function () {
+        if (chrome.runtime.lastError) {
+          // Error handling
+          reject(chrome.runtime.lastError);
+        } else {
+          console.log("Data saved to local storage.");
+          resolve(serializedData);
+        }
+      }
+    );
+  });
+}
+
+async function getDisabledDomainList() {
   return new Promise((resolve, reject) => {
     chrome.storage.local.get(["disabledDomainList"], function (res) {
       resolve(res?.disabledDomainList || "[]");
