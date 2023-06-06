@@ -1,5 +1,4 @@
 // data: [{"id":1,"text":"Dry clothes","completed":false},{"id":2,"text":"Task 2","completed":false},{"id":3,"text":"Task 3","completed":false}]
-
 class SFPopup extends HTMLElement {
   constructor() {
     super();
@@ -110,4 +109,6 @@ class SFPopup extends HTMLElement {
   }
 }
 
-customElements.define("sf-popup", SFPopup);
+if (!customElements.get(SFPopup)) {
+  customElements.define("sf-popup", SFPopup);
+}

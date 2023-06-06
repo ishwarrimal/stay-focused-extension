@@ -54,10 +54,10 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.message === "createSFPopup") {
     // Do something in response to the "extensionInstalled" message
     if (window.top !== window.self) return;
-    const script = document.createElement("script");
-    script.src = chrome.runtime.getURL("scripts/sf-popup.js");
-    document.head.appendChild(script);
     if (!document.querySelector("sf-popup")) {
+      const script = document.createElement("script");
+      script.src = chrome.runtime.getURL("scripts/sf-popup.js");
+      document.head.appendChild(script);
       appendSFPopup();
     }
   } else if (message.message === "addTodo") {
