@@ -1,12 +1,38 @@
 let sfPopup;
 let firstTime = true;
+let imageUrl;
 const showModal = async () => {
   if (!sfPopup) {
     sfPopup = document.querySelector("sf-popup").shadowRoot;
+    imageUrl = chrome.runtime.getURL("assets/icon48.png");
   }
   await populateTodoList();
   const popup = sfPopup.querySelector(".popup");
   popup.style.display = "block";
+  attachEventListeners();
+};
+
+const attachEventListeners = () => {
+  const hideTodoBtn = sfPopup.querySelector(
+    ".popup .todo-list-header #hideTodo"
+  );
+  const todoListContainer = sfPopup.querySelector(
+    ".popup .todo-list-container"
+  );
+  const sfLogo = sfPopup.querySelector(".popup .todo-list-header #sfShowLogo");
+  console.log(hideTodoBtn.innerText);
+  hideTodoBtn.addEventListener("click", () => {
+    todoListContainer.style.display = "none";
+    hideTodoBtn.style.display = "none";
+    sfLogo.querySelector("img").src = imageUrl;
+    sfLogo.style.display = "block";
+  });
+
+  sfLogo.addEventListener("click", () => {
+    todoListContainer.style.display = "block";
+    hideTodoBtn.style.display = "block";
+    sfLogo.style.display = "none";
+  });
 };
 
 const appendSFPopup = () => {

@@ -30,6 +30,28 @@ class SFPopup extends HTMLElement {
     .popup .draggable-div{
       cursor: move;
     }
+
+    .popup .todo-list-header{
+      display: flex;
+      justify-content: end;
+    }
+
+    .popup .todo-list-header #sfShowLogo{
+      display: none;
+    }
+
+    .popup .todo-list-header #hideTodo{
+      border: 1px solid black;
+      padding: 1px 5px;
+      font-size: 14px;
+      border-radius: 8px;
+      background: indianred;
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .popup .todo-list-header #hideTodo:hover{
+      box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
+    }
     
     .popup .todo-item {
       display: flex;
@@ -56,8 +78,16 @@ class SFPopup extends HTMLElement {
     </style>
       <div class="popup">
         <div class="draggable-div">
+          <div class="todo-list-header">
+            <span id="sfShowLogo">
+              <img src="" />
+            </span>
+            <span id="hideTodo">Hide</span>
+          </div>
+          <div class="todo-list-container">
           <ul style="padding:0; margin: 0" id="todo-ul">
           </ul>
+          </div>
         </div>
       </div>
     `;
@@ -84,7 +114,6 @@ class SFPopup extends HTMLElement {
 
     function dragMouseDown(e) {
       e = e || window.event;
-      e.preventDefault();
       pos3 = e.clientX;
       pos4 = e.clientY;
       document.onmouseup = closeDragElement;
@@ -94,6 +123,7 @@ class SFPopup extends HTMLElement {
     function elementDrag(e) {
       e = e || window.event;
       e.preventDefault();
+      e.stopPropagation();
       pos1 = pos3 - e.clientX;
       pos2 = pos4 - e.clientY;
       pos3 = e.clientX;
@@ -102,7 +132,8 @@ class SFPopup extends HTMLElement {
       popup.style.left = popup.offsetLeft - pos1 + "px";
     }
 
-    function closeDragElement() {
+    function closeDragElement(e) {
+      e.stopPropagation();
       document.onmouseup = null;
       document.onmousemove = null;
     }
