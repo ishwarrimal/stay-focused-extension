@@ -12,7 +12,19 @@ const appendSFPopup = () => {
   document.body.appendChild(myComponent);
   // setTimeout(attachEventListeners, 1000);
   //Show the modal after 3 seconds
-  setTimeout(showModal, 3000);
+  getDisabledDomainList().then((res) => {
+    setTimeout(() => {
+      const curUrl = window.location.hostname;
+      res = JSON.parse(res);
+      if (res.length > 0 && res.includes(curUrl)) {
+        document
+          .querySelector("sf-popup")
+          .shadowRoot.querySelector(".popup").style.display = "none";
+        return;
+      }
+      showModal();
+    }, 2000);
+  });
   //Send todo data to the popup script
 };
 
@@ -41,7 +53,7 @@ const populateTodoList = async () => {
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
   if (message.message === "createSFPopup") {
     // Do something in response to the "extensionInstalled" message
-    console.log("Create SF popup");
+    if (window.top !== window.self) return;
     const script = document.createElement("script");
     script.src = chrome.runtime.getURL("scripts/sf-popup.js");
     document.head.appendChild(script);
@@ -69,5 +81,16 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         sendResponse([]);
       });
     return true;
+  } else if (message.message === "getDisabledDomainList") {
+    getDisabledDomainList()
+      .then((res) => {
+        sendResponse(res ? JSON.parse(res) : []);
+      })
+      .catch((e) => {
+        sendResponse([]);
+      });
+    return true;
+  } else if (message.message === "updateDisabledDomainList") {
+    updateDisabledDomainList(message.data).then((r) => appendSFPopup());
   }
 });

@@ -1,9 +1,43 @@
 // script.js
 document.addEventListener("DOMContentLoaded", function () {
   const todoList = document.getElementById("todo-list");
+  let currentTab;
+  let currentDomain;
 
   // Initialize the todo items array
   let todos = [];
+  let disabledDomainList = [];
+
+  function renderTodo() {
+    renderDisableCB();
+    renderTodoItems();
+  }
+
+  function renderDisableCB() {
+    var url = new URL(currentTab.url);
+    currentDomain = url.hostname;
+    const isDisabled = disabledDomainList.find((d) => d === currentDomain);
+    const disableContainer = document.querySelector(
+      ".disabled-checkbox-container"
+    );
+    const checkbox = disableContainer.querySelector("input[type='checkbox']");
+    disableContainer.style.display = "block";
+    if (isDisabled) {
+      checkbox.checked = true;
+    }
+
+    checkbox.addEventListener("change", function () {
+      if (checkbox.checked) {
+        disabledDomainList.push(currentDomain);
+      } else {
+        const idx = disabledDomainList.indexOf(currentDomain);
+        if (idx !== -1) {
+          disabledDomainList.splice(idx, 1);
+        }
+      }
+      updateDisabledDomainList();
+    });
+  }
 
   function renderTodoItems() {
     // Clear the todo list
@@ -54,6 +88,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function updateDisabledDomainList() {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, {
+        message: "updateDisabledDomainList",
+        data: disabledDomainList,
+      });
+    });
+  }
+
   // Add event listener to the input field
   const inputField = document.createElement("input");
   inputField.type = "text";
@@ -67,17 +110,23 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   //Listen for the message from the content script
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    chrome.tabs.sendMessage(
-      tabs[0].id,
-      { message: "getTodoData" },
-      function (response) {
-        todos = [...response];
-        console.log(todos);
-        renderTodoItems();
-      }
-    );
-  });
+  function getDataFromContentScript(message) {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      currentTab = tabs[0];
+      chrome.tabs.sendMessage(tabs[0].id, { message }, function (response) {
+        if (message == "getTodoData") {
+          todos = [...response];
+          renderTodo();
+        } else if (message == "getDisabledDomainList") {
+          console.log("90", response);
+          disabledDomainList = [...response];
+          renderDisableCB();
+        }
+      });
+    });
+  }
+  getDataFromContentScript("getDisabledDomainList");
+  getDataFromContentScript("getTodoData");
 
   // Add the input field to the page
   document.body.insertBefore(inputField, todoList);

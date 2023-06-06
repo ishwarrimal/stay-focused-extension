@@ -8,6 +8,12 @@ h1 {
   text-align: center;
 }
 
+.disabled-checkbox-container {
+  margin: 2vw 0;
+  font-size: 12px;
+  display: none;
+}
+
 .todo-item {
   margin-bottom: 10px;
   display: flex;

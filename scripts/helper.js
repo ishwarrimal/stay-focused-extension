@@ -20,6 +20,14 @@ async function getTodoData(firstTime = false) {
   });
 }
 
+async function getDisabledDomainList(firstTime = false) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(["disabledDomainList"], function (res) {
+      resolve(res?.disabledDomainList || "[]");
+    });
+  });
+}
+
 async function addTodoData(data = defaultData) {
   const serializedData = JSON.stringify(data);
   return new Promise((resolve, reject) => {
@@ -32,5 +40,23 @@ async function addTodoData(data = defaultData) {
         resolve(serializedData);
       }
     });
+  });
+}
+
+async function updateDisabledDomainList(data = []) {
+  const serializedData = JSON.stringify(data);
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set(
+      { disabledDomainList: serializedData },
+      function () {
+        if (chrome.runtime.lastError) {
+          // Error handling
+          reject(chrome.runtime.lastError);
+        } else {
+          console.log("Data saved to local storage.");
+          resolve(serializedData);
+        }
+      }
+    );
   });
 }
