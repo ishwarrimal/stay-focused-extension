@@ -52,6 +52,18 @@ class SFPopup extends HTMLElement {
     .popup .todo-list-header #hideTodo:hover{
       box-shadow: 0 4px 4px rgba(0, 0, 0, 0.2);
     }
+
+    .popup.disabled .todo-list-header #sfShowLogo{
+      display: block;
+    }
+
+    .popup.disabled .todo-list-header #hideTodo{
+      display: none
+    }
+
+    .popup.disabled .todo-list-container{
+      display: none
+    }
     
     .popup .todo-item {
       display: flex;

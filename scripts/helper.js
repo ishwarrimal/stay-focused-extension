@@ -20,38 +20,51 @@ async function getTodoData(firstTime = false) {
   });
 }
 
-//store config for each domains:
-// domainConfig : {url : {disabled: true, minimized: true, position: {x: 100px, y: 200px}}}
+/**
+ *
+ * @param {string} url -> URL of the domain for which we want config
+ * @returns {promise} -> which in turn returns the config.{url : {disabled: true, minimized: true, position: {x: 100px, y: 200px}}}
+ */
 async function getDomainConfig(url) {
-  return new Promise((resole, reject) => {
-    chrome.storage.local.get("[domainConfig]", function (res) {
-      const domainConfig = res.domainConfig;
-      if (!domainConfig) {
-        reject("no config found");
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get("domainConfig", function (res) {
+      console.log(res, url);
+      const domainConfig = res?.domainConfig;
+      const returnData = domainConfig ? JSON.parse(domainConfig) : {};
+      if (url) {
+        resolve(returnData[url] || {});
       }
-      const returnData = JSON.parse(domainConfig);
-      resole(returnData[url] || {});
+      resolve(returnData);
     });
   });
 }
 
-//config is {minimized: true}
+/**
+ *
+ * @param {strin} url - The url of domain
+ * @param {Object} config - The config object
+ * @param {boolean} [config.disabled] -> Whether the popup is disabled on this site
+ * @param {boolean} [config.minimized] -> whehter the pupup is minimized on this site
+ * @param {Object} [config.position] -> {x,y} cordinates of the popup
+ * @returns {promise} -> which just updates whether the config was udpated or not
+ */
 async function updateDomainConfig(url, config) {
-  const oldConfig = await getDomainConfig(url);
-  const newConfig = { oldConfig, ...config };
+  const oldConfig = await getDomainConfig();
+  let domainConfig = oldConfig[url] || {};
+  domainConfig = { ...domainConfig, ...config };
+  oldConfig[url] = domainConfig;
+  const serializedData = JSON.stringify(oldConfig);
   return new Promise((resolve, reject) => {
-    chrome.storage.local.set(
-      { disabledDomainList: serializedData },
-      function () {
-        if (chrome.runtime.lastError) {
-          // Error handling
-          reject(chrome.runtime.lastError);
-        } else {
-          console.log("Data saved to local storage.");
-          resolve(serializedData);
-        }
+    console.log(serializedData);
+    chrome.storage.local.set({ domainConfig: serializedData }, function () {
+      if (chrome.runtime.lastError) {
+        // Error handling
+        reject(chrome.runtime.lastError);
+      } else {
+        console.log("Data saved to local storage.");
+        resolve(serializedData);
       }
-    );
+    });
   });
 }
 

@@ -1,7 +1,11 @@
 let sfPopup;
 let firstTime = true;
 let imageUrl;
+let isMinimized = false;
+let isDisabled = false;
+const CURRENT_DOMAIN = window.location.hostname;
 const showModal = async () => {
+  if (isDisabled) return;
   if (!sfPopup) {
     sfPopup = document.querySelector("sf-popup").shadowRoot;
     imageUrl = chrome.runtime.getURL("assets/icon48.png");
@@ -9,6 +13,7 @@ const showModal = async () => {
   await populateTodoList();
   const popup = sfPopup.querySelector(".popup");
   popup.style.display = "block";
+  isMinimized && popup.classList.add("disabled");
   attachEventListeners();
 };
 
@@ -20,18 +25,19 @@ const attachEventListeners = () => {
     ".popup .todo-list-container"
   );
   const sfLogo = sfPopup.querySelector(".popup .todo-list-header #sfShowLogo");
-  console.log(hideTodoBtn.innerText);
+  sfLogo.querySelector("img").src = imageUrl;
   hideTodoBtn.addEventListener("click", () => {
-    todoListContainer.style.display = "none";
-    hideTodoBtn.style.display = "none";
-    sfLogo.querySelector("img").src = imageUrl;
-    sfLogo.style.display = "block";
+    sfPopup.querySelector(".popup").classList.add("disabled");
+    updateDomainConfig(CURRENT_DOMAIN, { minimized: true })
+      .then((res) => console.log("Config updated successfully"))
+      .catch((e) => console.log("error in updating domain config"));
   });
 
   sfLogo.addEventListener("click", () => {
-    todoListContainer.style.display = "block";
-    hideTodoBtn.style.display = "block";
-    sfLogo.style.display = "none";
+    sfPopup.querySelector(".popup").classList.remove("disabled");
+    updateDomainConfig(CURRENT_DOMAIN, { minimized: false })
+      .then((res) => console.log("Config updated successfully"))
+      .catch((e) => console.log("error in updating domain config"));
   });
 };
 
@@ -42,16 +48,11 @@ const appendSFPopup = () => {
   }
   // setTimeout(attachEventListeners, 1000);
   //Show the modal after 3 seconds
-  getDisabledDomainList().then((res) => {
+  getDomainConfig(CURRENT_DOMAIN).then((res) => {
     setTimeout(() => {
-      const curUrl = window.location.hostname;
-      res = JSON.parse(res);
-      if (res.length > 0 && res.includes(curUrl)) {
-        document
-          .querySelector("sf-popup")
-          .shadowRoot.querySelector(".popup").style.display = "none";
-        return;
-      }
+      console.log(res);
+      isMinimized = res?.minimized;
+      isDisabled = res?.disabled;
       showModal();
     }, 2000);
   });
@@ -113,16 +114,19 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         sendResponse([]);
       });
     return true;
-  } else if (message.message === "getDisabledDomainList") {
-    getDisabledDomainList()
+  } else if (message.message === "isDisabledForThisDomain") {
+    getDomainConfig(CURRENT_DOMAIN)
       .then((res) => {
-        sendResponse(res ? JSON.parse(res) : []);
+        console.log(res, 123);
+        sendResponse(res?.disabled);
       })
       .catch((e) => {
-        sendResponse([]);
+        sendResponse(false);
       });
     return true;
   } else if (message.message === "updateDisabledDomainList") {
-    updateDisabledDomainList(message.data).then((r) => appendSFPopup());
+    updateDomainConfig(CURRENT_DOMAIN, { disabled: message.data }).then((r) =>
+      appendSFPopup()
+    );
   }
 });

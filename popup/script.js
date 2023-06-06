@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Initialize the todo items array
   let todos = [];
-  let disabledDomainList = [];
+  let isDisabled = false;
 
   function renderTodo() {
     renderDisableCB();
@@ -14,9 +14,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function renderDisableCB() {
-    var url = new URL(currentTab.url);
-    currentDomain = url.hostname;
-    const isDisabled = disabledDomainList.find((d) => d === currentDomain);
     const disableContainer = document.querySelector(
       ".disabled-checkbox-container"
     );
@@ -28,12 +25,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     checkbox.addEventListener("change", function () {
       if (checkbox.checked) {
-        disabledDomainList.push(currentDomain);
+        isDisabled = true;
       } else {
-        const idx = disabledDomainList.indexOf(currentDomain);
-        if (idx !== -1) {
-          disabledDomainList.splice(idx, 1);
-        }
+        isDisabled = false;
       }
       updateDisabledDomainList();
     });
@@ -92,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
     chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
       chrome.tabs.sendMessage(tabs[0].id, {
         message: "updateDisabledDomainList",
-        data: disabledDomainList,
+        data: isDisabled,
       });
     });
   }
@@ -117,15 +111,14 @@ document.addEventListener("DOMContentLoaded", function () {
         if (message == "getTodoData") {
           todos = [...response];
           renderTodo();
-        } else if (message == "getDisabledDomainList") {
-          console.log("90", response);
-          disabledDomainList = [...response];
+        } else if (message == "isDisabledForThisDomain") {
+          isDisabled = response;
           renderDisableCB();
         }
       });
     });
   }
-  getDataFromContentScript("getDisabledDomainList");
+  getDataFromContentScript("isDisabledForThisDomain");
   getDataFromContentScript("getTodoData");
 
   // Add the input field to the page
