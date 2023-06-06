@@ -1,15 +1,19 @@
 let sfPopup;
 let firstTime = true;
 const showModal = async () => {
-  sfPopup = document.querySelector("sf-popup").shadowRoot;
+  if (!sfPopup) {
+    sfPopup = document.querySelector("sf-popup").shadowRoot;
+  }
   await populateTodoList();
   const popup = sfPopup.querySelector(".popup");
   popup.style.display = "block";
 };
 
 const appendSFPopup = () => {
-  const myComponent = document.createElement("sf-popup");
-  document.body.appendChild(myComponent);
+  if (!document?.querySelector("sf-popup")) {
+    const myComponent = document.createElement("sf-popup");
+    document.body.appendChild(myComponent);
+  }
   // setTimeout(attachEventListeners, 1000);
   //Show the modal after 3 seconds
   getDisabledDomainList().then((res) => {
@@ -60,6 +64,8 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
       document.head.appendChild(script);
       appendSFPopup();
     }
+  } else if (message.message === "refreshSFPopup") {
+    appendSFPopup();
   } else if (message.message === "addTodo") {
     const todoData = message.data.map((d, i) => ({
       id: i,
@@ -70,7 +76,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     addTodoData(todoData)
       .then((res) => showModal())
       .catch((e) => console.log("something went wrong"));
-  } else if (message.message == "getTodoData") {
+  } else if (message.message === "getTodoData") {
     getTodoData()
       .then((res) => {
         res = JSON.parse(res);
