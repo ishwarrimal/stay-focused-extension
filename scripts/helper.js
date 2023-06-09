@@ -41,12 +41,12 @@ async function getDomainConfig(url) {
 
 /**
  *
- * @param {strin} url - The url of domain
+ * @param {string} url - The url of domain
  * @param {Object} config - The config object
  * @param {boolean} [config.disabled] -> Whether the popup is disabled on this site
  * @param {boolean} [config.minimized] -> whehter the pupup is minimized on this site
  * @param {Object} [config.position] -> {x,y} cordinates of the popup
- * @returns {promise} -> which just updates whether the config was udpated or not
+ * @returns {promise} -> Returns true when the config is updataed
  */
 async function updateDomainConfig(url, config) {
   const oldConfig = await getDomainConfig();

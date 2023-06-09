@@ -18,15 +18,6 @@ chrome.webNavigation.onCompleted.addListener(
   { url: [{ schemes: ["http", "https"] }] }
 );
 
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log("received messae", request);
-  if (request.message === "showDefinition") {
-    // Get the selected text from the content script
-    var selectedText = request.selectionText;
-  }
-  // sendResponse();
-});
-
 chrome.tabs.onActivated.addListener(function (activeInfo) {
   const tabId = activeInfo.tabId;
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {

@@ -59,10 +59,6 @@ const appendSFPopup = () => {
   //Send todo data to the popup script
 };
 
-const handleBookmarkClicked = () => {
-  console.log("Word to bookmark is -> ", selection);
-};
-
 const populateTodoList = async () => {
   const todoList = JSON.parse(await getTodoData(firstTime));
   firstTime = false;
