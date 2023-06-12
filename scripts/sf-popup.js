@@ -74,6 +74,7 @@ class SFPopup extends HTMLElement {
     .popup .todo-item input[type="checkbox"] {
       margin-right: 4px;
       cursor: pointer;
+      display: none;
     }
 
     .popup .todo-item label {
